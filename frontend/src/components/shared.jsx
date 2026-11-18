@@ -1,18 +1,33 @@
+
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 
+// Production backend URL from Vercel environment variable
+const API_BASE_URL = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '')
+
 export function useApi(url) {
-  const [data, setData]     = useState(null)
+  const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
-  const [error, setError]   = useState(null)
+  const [error, setError] = useState(null)
+
   useEffect(() => {
     setLoading(true)
-    axios.get(url)
-      .then(r => { setData(r.data); setLoading(false) })
-      .catch(e => { setError(e.message); setLoading(false) })
+    setError(null)
+
+    axios.get(`${API_BASE_URL}${url}`)
+      .then(r => {
+        setData(r.data)
+        setLoading(false)
+      })
+      .catch(e => {
+        setError(e.message)
+        setLoading(false)
+      })
   }, [url])
+
   return { data, loading, error }
 }
+
 
 export function Loading() {
   return (
